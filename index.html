@@ -200,6 +200,8 @@
     border-radius:28px;
     box-shadow:var(--shadow);
     border:6px solid #fff;
+    position:relative;
+    z-index:2;
   }
   .hero-photo-accent{
     position:absolute;
@@ -207,8 +209,23 @@
     border:2px solid var(--teal);
     border-radius:28px;
     top:-16px; left:-16px;
-    z-index:-1;
+    z-index:0;
     opacity:0.5;
+  }
+  .hero-photo-collage{
+    position:absolute;
+    width:42%;
+    aspect-ratio:1;
+    right:-9%;
+    bottom:-10%;
+    border-radius:20px;
+    overflow:hidden;
+    border:5px solid #fff;
+    box-shadow:0 18px 40px -14px rgba(10,102,112,0.4);
+    z-index:3;
+  }
+  .hero-photo-collage img{
+    width:100%; height:100%; object-fit:cover; border-radius:0; border:none; box-shadow:none;
   }
   .hero-art-caption{
     position:absolute; bottom:-6px; left:50%; transform:translateX(-50%);
@@ -216,7 +233,37 @@
     font-size:13px; font-weight:700; color:var(--teal-deep);
     box-shadow:0 12px 30px -12px rgba(14,74,70,0.35);
     white-space:nowrap;
+    z-index:4;
   }
+
+  /* ---------- Scroll reveal ---------- */
+  .reveal{
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity .7s ease, transform .7s cubic-bezier(.2,.7,.3,1);
+  }
+  .reveal.is-visible{ opacity:1; transform:translateY(0); }
+  .reveal-item{
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity .7s ease, transform .7s cubic-bezier(.2,.7,.3,1);
+  }
+  .reveal-stagger.is-visible .reveal-item{ opacity:1; transform:translateY(0); }
+  .reveal-stagger.is-visible .reveal-item:nth-child(1){ transition-delay:0s; }
+  .reveal-stagger.is-visible .reveal-item:nth-child(2){ transition-delay:.12s; }
+  .reveal-stagger.is-visible .reveal-item:nth-child(3){ transition-delay:.24s; }
+  .hero-fade{
+    opacity:0;
+    transform:translateY(18px);
+    transition:opacity .8s ease, transform .8s cubic-bezier(.2,.7,.3,1);
+  }
+  .hero-fade.is-visible{ opacity:1; transform:translateY(0); }
+  @media (prefers-reduced-motion: reduce){
+    .reveal, .reveal-item, .hero-fade{ opacity:1; transform:none; }
+  }
+
+  /* ---------- Header scroll shadow ---------- */
+  header.is-scrolled{ box-shadow:0 8px 24px -16px rgba(10,102,112,0.35); }
 
   /* ---------- Section shared ---------- */
   section{ padding:96px 0; }
@@ -311,6 +358,21 @@
     box-shadow:var(--shadow);
     aspect-ratio:4/5;
   }
+  .carousel-card::after{
+    content:'';
+    position:absolute; inset:0;
+    background:linear-gradient(0deg, rgba(10,40,42,0.72) 0%, rgba(10,40,42,0.15) 42%, transparent 62%);
+    opacity:0; transition:opacity .35s ease;
+  }
+  .carousel-card:hover::after{ opacity:1; }
+  .carousel-caption{
+    position:absolute; left:18px; right:18px; bottom:16px;
+    color:#fff; font-size:13.5px; font-weight:600; line-height:1.35;
+    opacity:0; transform:translateY(8px);
+    transition:opacity .35s ease, transform .35s ease;
+    z-index:2;
+  }
+  .carousel-card:hover .carousel-caption{ opacity:1; transform:translateY(0); }
   .carousel-card img{
     width:100%; height:100%; object-fit:cover;
     display:block;
@@ -446,7 +508,7 @@
 <main id="topo">
   <section class="hero">
     <div class="container hero-grid">
-      <div class="hero-copy">
+      <div class="hero-copy hero-fade">
         <div class="eyebrow">Buffet e Eventos · Culinária Afetiva</div>
         <h1>Amor em produzir, prazer em servir e uma paixão genuína por agradar. ❤️✨</h1>
         <p class="hero-lede">É sob esses três pilares que nasce a Tia Quitanda. Para nós, a cozinha vai muito além das receitas: ela é um abraço em forma de sabor. Somos uma equipe movida pela culinária afetiva, transformando buffets e eventos em memórias inesquecíveis para você e seus convidados.</p>
@@ -467,10 +529,13 @@
         </div>
       </div>
 
-      <div class="hero-art">
+      <div class="hero-art hero-fade" style="transition-delay:.15s;">
         <div class="hero-photo-frame">
           <div class="hero-photo-accent"></div>
           <img src="./images/buffet-09.jpg" alt="Tábua de frios da Tia Quitanda com queijos, salame e frutas">
+          <div class="hero-photo-collage">
+            <img src="./images/buffet-03.jpg" alt="Mini pizzas com tomate cereja e manjericão">
+          </div>
         </div>
         <div class="hero-art-caption">Culinária afetiva desde sempre</div>
       </div>
@@ -479,28 +544,28 @@
 
   <section id="sobre">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head reveal">
         <div class="divider"></div>
         <div class="eyebrow">Nossos pilares</div>
         <h2>Cada evento é uma história que merece carinho de verdade</h2>
         <p>A Tia Quitanda nasceu de três princípios simples — e é por eles que cuidamos de cada detalhe do seu buffet.</p>
       </div>
-      <div class="pilares">
-        <div class="pilar">
+      <div class="pilares reveal-stagger">
+        <div class="pilar reveal-item">
           <div class="pilar-icon" style="background:rgba(0,163,162,0.12); color:var(--teal-deep);">
             <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M50 82 C20 60 8 40 8 25 C8 10 20 4 32 10 C40 14 46 20 50 28 C54 20 60 14 68 10 C80 4 92 10 92 25 C92 40 80 60 50 82Z"/></svg>
           </div>
           <h3>Amor em produzir</h3>
           <p>Cada prato é preparado com o mesmo cuidado de uma receita de família — porque é isso que a culinária afetiva significa para nós.</p>
         </div>
-        <div class="pilar">
+        <div class="pilar reveal-item">
           <div class="pilar-icon" style="background:rgba(163,100,61,0.12); color:var(--terracotta-deep);">
             <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M15 68 Q15 30 50 30 Q85 30 85 68"/><line x1="10" y1="68" x2="90" y2="68"/><line x1="50" y1="18" x2="50" y2="26"/><circle cx="50" cy="11" r="4" fill="currentColor" stroke="none"/></svg>
           </div>
           <h3>Prazer em servir</h3>
           <p>Do primeiro contato ao último brinde, cuidamos de cada detalhe para que você só precise aproveitar o seu momento.</p>
         </div>
-        <div class="pilar">
+        <div class="pilar reveal-item">
           <div class="pilar-icon" style="background:rgba(0,163,162,0.12); color:var(--teal-deep);">
             <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M50 10 L58 42 L90 50 L58 58 L50 90 L42 58 L10 50 L42 42 Z"/></svg>
           </div>
@@ -513,14 +578,14 @@
 
   <section id="servicos" style="background:var(--cream-deep);">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head reveal">
         <div class="divider"></div>
         <div class="eyebrow">O que fazemos</div>
         <h2>Buffet e eventos para cada tipo de momento</h2>
         <p>De reuniões corporativas a celebrações em família, adaptamos o cardápio e o serviço ao clima do seu evento.</p>
       </div>
-      <div class="servicos-grid">
-        <div class="servico-card tealbg">
+      <div class="servicos-grid reveal-stagger">
+        <div class="servico-card tealbg reveal-item">
           <div class="servico-ring"></div>
           <div class="servico-emoji">
             <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M20 40 h50 v25 a25 25 0 0 1-25 25 h0 a25 25 0 0 1-25-25 Z"/><path d="M70 45 h10 a12 12 0 0 1 0 24 h-8"/><path d="M32 32 q4 -8 0 -16 M46 32 q4 -8 0 -16" stroke-width="6"/></svg>
@@ -528,7 +593,7 @@
           <h3>Coffee-break & Corporativo</h3>
           <p>Reuniões, treinamentos e eventos empresariais com um cardápio pensado para impressionar clientes e equipe — com pontualidade e apresentação impecável.</p>
         </div>
-        <div class="servico-card terracottabg">
+        <div class="servico-card terracottabg reveal-item">
           <div class="servico-ring"></div>
           <div class="servico-emoji">
             <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M20 85 L45 30 L82 62 Z"/><circle cx="70" cy="20" r="4" fill="currentColor" stroke="none"/><circle cx="85" cy="35" r="3" fill="currentColor" stroke="none"/><circle cx="58" cy="14" r="3" fill="currentColor" stroke="none"/></svg>
@@ -542,7 +607,7 @@
 
   <section id="galeria">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head reveal">
         <div class="divider"></div>
         <div class="eyebrow">Galeria</div>
         <h2>Momentos que já ganhamos o carinho de servir</h2>
@@ -556,22 +621,22 @@
           <svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
-      <div class="carousel-wrap">
+      <div class="carousel-wrap reveal">
         <div class="carousel" id="carousel">
-          <div class="carousel-card"><img src="./images/buffet-01.jpg" alt="Mesa de buffet completa com frios, frutas e finger foods" loading="lazy"></div>
-          <div class="carousel-card"><img src="./images/buffet-02.jpg" alt="Cesta de pães artesanais" loading="lazy"></div>
-          <div class="carousel-card"><img src="./images/buffet-03.jpg" alt="Mini pizzas com tomate cereja e manjericão" loading="lazy"></div>
-          <div class="carousel-card"><img src="./images/buffet-04.jpg" alt="Mini sanduíches de hambúrguer com queijo" loading="lazy"></div>
-          <div class="carousel-card"><img src="./images/buffet-05.jpg" alt="Bandeja variada de salgados fritos e assados" loading="lazy"></div>
-          <div class="carousel-card"><img src="./images/buffet-06.jpg" alt="Coxinhas, quibes e salgados variados" loading="lazy"></div>
-          <div class="carousel-card"><img src="./images/buffet-07.jpg" alt="Petiscos servidos com drinque" loading="lazy"></div>
-          <div class="carousel-card"><img src="./images/buffet-08.jpg" alt="Quibes e coxinhas com limão" loading="lazy"></div>
-          <div class="carousel-card"><img src="./images/buffet-09.jpg" alt="Tábua de frios com queijos, salame e frutas" loading="lazy"></div>
-          <div class="carousel-card"><img src="./images/buffet-10.jpg" alt="Tábuas de frios em formato de coração" loading="lazy"></div>
-          <div class="carousel-card"><img src="./images/buffet-11.jpg" alt="Tábua de frios com salame, uvas e queijos" loading="lazy"></div>
-          <div class="carousel-card"><img src="./images/buffet-12.jpg" alt="Pizza artesanal com vinho" loading="lazy"></div>
-          <div class="carousel-card"><img src="./images/buffet-13.jpg" alt="Preparo ao ar livre em panela grande" loading="lazy"></div>
-          <div class="carousel-card"><img src="./images/buffet-14.jpg" alt="Gratinado servido em travessa" loading="lazy"></div>
+          <div class="carousel-card"><img src="./images/buffet-01.jpg" alt="Mesa de buffet completa com frios, frutas e finger foods" loading="lazy"><span class="carousel-caption">Mesa completa para eventos</span></div>
+          <div class="carousel-card"><img src="./images/buffet-02.jpg" alt="Cesta de pães artesanais" loading="lazy"><span class="carousel-caption">Pães artesanais</span></div>
+          <div class="carousel-card"><img src="./images/buffet-03.jpg" alt="Mini pizzas com tomate cereja e manjericão" loading="lazy"><span class="carousel-caption">Mini pizzas</span></div>
+          <div class="carousel-card"><img src="./images/buffet-04.jpg" alt="Mini sanduíches de hambúrguer com queijo" loading="lazy"><span class="carousel-caption">Mini sanduíches</span></div>
+          <div class="carousel-card"><img src="./images/buffet-05.jpg" alt="Bandeja variada de salgados fritos e assados" loading="lazy"><span class="carousel-caption">Salgados variados</span></div>
+          <div class="carousel-card"><img src="./images/buffet-06.jpg" alt="Coxinhas, quibes e salgados variados" loading="lazy"><span class="carousel-caption">Coxinhas & quibes</span></div>
+          <div class="carousel-card"><img src="./images/buffet-07.jpg" alt="Petiscos servidos com drinque" loading="lazy"><span class="carousel-caption">Petiscos & drinque</span></div>
+          <div class="carousel-card"><img src="./images/buffet-08.jpg" alt="Quibes e coxinhas com limão" loading="lazy"><span class="carousel-caption">Quibes & coxinhas</span></div>
+          <div class="carousel-card"><img src="./images/buffet-09.jpg" alt="Tábua de frios com queijos, salame e frutas" loading="lazy"><span class="carousel-caption">Tábua de frios</span></div>
+          <div class="carousel-card"><img src="./images/buffet-10.jpg" alt="Tábuas de frios em formato de coração" loading="lazy"><span class="carousel-caption">Tábuas em formato de coração</span></div>
+          <div class="carousel-card"><img src="./images/buffet-11.jpg" alt="Tábua de frios com salame, uvas e queijos" loading="lazy"><span class="carousel-caption">Tábua de frios especial</span></div>
+          <div class="carousel-card"><img src="./images/buffet-12.jpg" alt="Pizza artesanal com vinho" loading="lazy"><span class="carousel-caption">Pizza artesanal</span></div>
+          <div class="carousel-card"><img src="./images/buffet-13.jpg" alt="Preparo ao ar livre em panela grande" loading="lazy"><span class="carousel-caption">Preparo ao ar livre</span></div>
+          <div class="carousel-card"><img src="./images/buffet-14.jpg" alt="Gratinado servido em travessa" loading="lazy"><span class="carousel-caption">Gratinado da casa</span></div>
         </div>
       </div>
     </div>
@@ -579,7 +644,7 @@
 
   <section id="contato">
     <div class="container">
-      <div class="cta-final">
+      <div class="cta-final reveal">
         <h2>Deixe a Tia Quitanda surpreender o seu próximo momento especial! 🍲</h2>
         <p>Fale agora com a gente pelo WhatsApp e conte um pouco sobre o seu evento — coffee-break, festa ou confraternização.</p>
         <a class="btn btn-primary" href="https://wa.me/5531993133110?text=Ol%C3%A1%21%20Vim%20pelo%20site%20e%20gostaria%20de%20saber%20mais%20sobre%20o%20buffet%20da%20Tia%20Quitanda%20para%20o%20meu%20evento." target="_blank" rel="noopener">
@@ -615,17 +680,51 @@
 
 <script>
   (function(){
+    // Hero fade-in on load
+    requestAnimationFrame(function(){
+      setTimeout(function(){
+        document.querySelectorAll('.hero-fade').forEach(function(el){ el.classList.add('is-visible'); });
+      }, 60);
+    });
+
+    // Scroll reveal for sections
+    var revealEls = document.querySelectorAll('.reveal, .reveal-stagger');
+    if('IntersectionObserver' in window && revealEls.length){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+      revealEls.forEach(function(el){ io.observe(el); });
+    } else {
+      revealEls.forEach(function(el){ el.classList.add('is-visible'); });
+    }
+
+    // Header shadow on scroll
+    var header = document.querySelector('header');
+    if(header){
+      window.addEventListener('scroll', function(){
+        if(window.scrollY > 8){ header.classList.add('is-scrolled'); }
+        else{ header.classList.remove('is-scrolled'); }
+      }, { passive: true });
+    }
+
+    // Carousel navigation
     var track = document.getElementById('carousel');
     var prev = document.getElementById('carPrev');
     var next = document.getElementById('carNext');
-    if(!track || !prev || !next) return;
-    function step(){
-      var card = track.querySelector('.carousel-card');
-      var gap = 22;
-      return card ? card.getBoundingClientRect().width + gap : 320;
+    if(track && prev && next){
+      var step = function(){
+        var card = track.querySelector('.carousel-card');
+        var gap = 22;
+        return card ? card.getBoundingClientRect().width + gap : 320;
+      };
+      prev.addEventListener('click', function(){ track.scrollBy({ left: -step(), behavior: 'smooth' }); });
+      next.addEventListener('click', function(){ track.scrollBy({ left: step(), behavior: 'smooth' }); });
     }
-    prev.addEventListener('click', function(){ track.scrollBy({ left: -step(), behavior: 'smooth' }); });
-    next.addEventListener('click', function(){ track.scrollBy({ left: step(), behavior: 'smooth' }); });
   })();
 </script>
 
