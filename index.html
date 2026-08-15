@@ -236,6 +236,64 @@
     z-index:4;
   }
 
+  /* ---------- Decorative background blobs ---------- */
+  .bg-blob{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(4px);
+    opacity:0.12;
+    pointer-events:none;
+    z-index:0;
+    animation:drift 16s ease-in-out infinite;
+  }
+  .bg-blob-1{
+    width:360px; height:360px;
+    background:var(--teal);
+    top:-120px; left:-140px;
+    animation-delay:0s;
+  }
+  .bg-blob-2{
+    width:300px; height:300px;
+    background:var(--terracotta);
+    bottom:-100px; right:-120px;
+    animation-delay:-6s;
+  }
+  @keyframes drift{
+    0%,100%{ transform:translate(0,0) scale(1); }
+    50%{ transform:translate(24px,-18px) scale(1.08); }
+  }
+  section > .container{ position:relative; z-index:1; }
+
+  /* ---------- Card tilt/lift micro-interaction ---------- */
+  .pilar, .servico-card{ transition:transform .35s ease, box-shadow .35s ease; }
+  .pilar:hover{ transform:translateY(-6px) !important; box-shadow:0 20px 40px -18px rgba(10,102,112,0.25); }
+  .servico-card:hover{ transform:translateY(-6px) scale(1.015) !important; }
+
+  /* ---------- Image fade-in on load ---------- */
+  img{ transition:opacity .5s ease; }
+  img[loading="lazy"]{ opacity:0; }
+  img.img-loaded{ opacity:1 !important; }
+
+  /* ---------- WhatsApp float entrance + tooltip ---------- */
+  .wa-float{
+    opacity:0; transform:scale(0.6);
+    transition:opacity .4s ease, transform .4s cubic-bezier(.34,1.56,.64,1);
+  }
+  .wa-float.is-visible{ opacity:1; transform:scale(1); }
+  .wa-tooltip{
+    position:absolute; right:72px; top:50%; transform:translateY(-50%);
+    background:var(--teal-deep); color:#fff;
+    padding:8px 14px; border-radius:8px;
+    font-size:12.5px; font-weight:700; white-space:nowrap;
+    opacity:0; pointer-events:none;
+    transition:opacity .25s ease;
+  }
+  .wa-tooltip::after{
+    content:''; position:absolute; right:-5px; top:50%; transform:translateY(-50%);
+    border:5px solid transparent; border-left-color:var(--teal-deep);
+  }
+  .wa-float:hover .wa-tooltip{ opacity:1; }
+
   /* ---------- Scroll reveal ---------- */
   .reveal{
     opacity:0;
@@ -266,7 +324,7 @@
   header.is-scrolled{ box-shadow:0 8px 24px -16px rgba(10,102,112,0.35); }
 
   /* ---------- Section shared ---------- */
-  section{ padding:96px 0; }
+  section{ padding:96px 0; scroll-margin-top:84px; }
   .section-head{ max-width:640px; margin-bottom:52px; }
   .section-head h2{
     font-size:clamp(28px, 3.2vw, 38px);
@@ -452,8 +510,8 @@
     background:var(--ring);
     padding:3px;
     box-shadow:0 14px 32px -8px rgba(14,74,70,0.5);
-    animation:pulse 2.6s ease-in-out infinite;
   }
+  .wa-float.is-visible{ animation:pulse 2.6s ease-in-out infinite; }
   .wa-float-inner{
     width:100%; height:100%; border-radius:50%;
     background:#1EBE5D;
@@ -542,7 +600,8 @@
     </div>
   </section>
 
-  <section id="sobre">
+  <section id="sobre" style="position:relative; overflow:hidden;">
+    <div class="bg-blob bg-blob-1"></div>
     <div class="container">
       <div class="section-head reveal">
         <div class="divider"></div>
@@ -576,7 +635,8 @@
     </div>
   </section>
 
-  <section id="servicos" style="background:var(--cream-deep);">
+  <section id="servicos" style="background:var(--cream-deep); position:relative; overflow:hidden;">
+    <div class="bg-blob bg-blob-2"></div>
     <div class="container">
       <div class="section-head reveal">
         <div class="divider"></div>
@@ -673,6 +733,7 @@
 </footer>
 
 <a class="wa-float" href="https://wa.me/5531993133110?text=Ol%C3%A1%21%20Vim%20pelo%20site%20e%20gostaria%20de%20saber%20mais%20sobre%20o%20buffet%20da%20Tia%20Quitanda%20para%20o%20meu%20evento." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+  <span class="wa-tooltip">Fale com a gente!</span>
   <div class="wa-float-inner">
     <svg viewBox="0 0 24 24" fill="none"><path d="M17.6 6.3A8.9 8.9 0 0 0 3.2 16.9L2 22l5.2-1.4a8.9 8.9 0 0 0 12.7-8 8.9 8.9 0 0 0-2.3-6.3Z" fill="#fff"/></svg>
   </div>
@@ -724,6 +785,38 @@
       };
       prev.addEventListener('click', function(){ track.scrollBy({ left: -step(), behavior: 'smooth' }); });
       next.addEventListener('click', function(){ track.scrollBy({ left: step(), behavior: 'smooth' }); });
+
+      // Gentle autoplay, pauses on hover/touch/interaction
+      var autoplayTimer = null;
+      var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      function startAutoplay(){
+        if(reduceMotion) return;
+        stopAutoplay();
+        autoplayTimer = setInterval(function(){
+          var atEnd = Math.ceil(track.scrollLeft + track.clientWidth) >= track.scrollWidth;
+          if(atEnd){ track.scrollTo({ left: 0, behavior: 'smooth' }); }
+          else{ track.scrollBy({ left: step(), behavior: 'smooth' }); }
+        }, 3800);
+      }
+      function stopAutoplay(){ if(autoplayTimer){ clearInterval(autoplayTimer); autoplayTimer = null; } }
+      track.addEventListener('mouseenter', stopAutoplay);
+      track.addEventListener('mouseleave', startAutoplay);
+      track.addEventListener('touchstart', stopAutoplay, { passive: true });
+      prev.addEventListener('click', stopAutoplay);
+      next.addEventListener('click', stopAutoplay);
+      startAutoplay();
+    }
+
+    // Fade-in images once loaded (avoids pop-in / broken-image flash)
+    document.querySelectorAll('img').forEach(function(img){
+      if(img.complete){ img.classList.add('img-loaded'); }
+      else{ img.addEventListener('load', function(){ img.classList.add('img-loaded'); }); }
+    });
+
+    // WhatsApp float entrance, after hero settles
+    var waFloat = document.querySelector('.wa-float');
+    if(waFloat){
+      setTimeout(function(){ waFloat.classList.add('is-visible'); }, 900);
     }
   })();
 </script>
